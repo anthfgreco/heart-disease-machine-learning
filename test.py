@@ -1,3 +1,7 @@
+from utils import add_intercept
+import pandas
+import numpy as np
+
 """
 UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-prediction
 
@@ -19,7 +23,12 @@ ST_Slope: the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, 
 HeartDisease: output class [1: heart disease, 0: Normal]
 """
 
-import pandas
-
 df = pandas.read_csv("heart.csv")
-print(df)
+np_array = np.array(df.values) #shape (918, 12)
+
+X = np_array[:, :-1] # get all but last column
+X = add_intercept(X)
+
+Y = np_array[:, -1]  # get last column
+
+print(X.shape, Y.shape)
