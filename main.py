@@ -36,35 +36,12 @@ UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-pre
 11  HeartDisease: output class [1: heart disease, 0: Normal]
 """
 
-data = read_csv_file("heart.csv", remove_header=True)
+data = read_csv_file("heart_processed.csv", remove_header=False, convert_to_float=True)
 
-# Convert string data to numerical data
-for i in range(len(data)):
-   # M->0 and F->1
-   if data[i][1] == "M": data[i][1] = 0
-   if data[i][1] == "F": data[i][1] = 1
+X = data[:, :-1]     #get all columns except last
+X = add_intercept(X) #add 1's to first column
 
-   # TA->0 ATA->1 NAP->2 ASY->3
-   if data[i][2] == "TA":  data[i][2] = 0
-   if data[i][2] == "ATA": data[i][2] = 1
-   if data[i][2] == "NAP": data[i][2] = 2
-   if data[i][2] == "ASY": data[i][2] = 3
+Y = data[:, -1]      #get last column
 
-   # Normal->0 ST->1 LVH->2
-   if data[i][6] == "Normal": data[i][6] = 0
-   if data[i][6] == "ST":     data[i][6] = 1
-   if data[i][6] == "LVH":    data[i][6] = 2
-
-   # N->0 Y->1
-   if data[i][8] == "N": data[i][8] = 0
-   if data[i][8] == "Y": data[i][8] = 1
-
-   # Up->0 Flat->1 Down->2
-   if data[i][10] == "Up":    data[i][10] = 0
-   if data[i][10] == "Flat":  data[i][10] = 1
-   if data[i][10] == "Down":  data[i][10] = 2
-
-# Change string values in data to floats
-data = np.array(data, dtype=np.float16)
-
-save_to_file(data, "heart_processed.csv")
+print("X:\n", X)
+#print("\nY:\n", Y)
