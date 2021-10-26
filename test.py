@@ -1,5 +1,5 @@
 from utils import add_intercept
-import pandas
+import csv
 import numpy as np
 
 """
@@ -13,9 +13,10 @@ ChestPainType: chest pain type [TA: Typical Angina, ATA: Atypical Angina, NAP: N
 RestingBP: resting blood pressure [mm Hg]
 Cholesterol: serum cholesterol [mm/dl]
 FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]
-RestingECG: resting electrocardiogram results  [Normal: Normal, 
-                                                ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), 
-                                                LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]
+RestingECG: resting electrocardiogram results  
+   [Normal: Normal, 
+   ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), 
+   LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]
 MaxHR: maximum heart rate achieved [Numeric value between 60 and 202]
 ExerciseAngina: exercise-induced angina [Y: Yes, N: No]
 Oldpeak: oldpeak = ST [Numeric value measured in depression]
@@ -23,12 +24,15 @@ ST_Slope: the slope of the peak exercise ST segment [Up: upsloping, Flat: flat, 
 HeartDisease: output class [1: heart disease, 0: Normal]
 """
 
-df = pandas.read_csv("heart.csv")
-np_array = np.array(df.values) #shape (918, 12)
+with open('heart.csv', newline='') as f:
+    reader = csv.reader(f)
+    next(reader, None)  #skip the first list
+    data = np.array(list(reader))
 
-X = np_array[:, :-1] # get all but last column
-X = add_intercept(X)
+X = data[:, :-1]     #get all columns except last
+X = add_intercept(X) #add 1's to first column
 
-Y = np_array[:, -1]  # get last column
+Y = data[:, -1]      #get last column
 
-print(X.shape, Y.shape)
+print("X:\n", X)
+print("\nY:\n", Y)
