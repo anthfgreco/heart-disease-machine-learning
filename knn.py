@@ -23,7 +23,7 @@ for split in splits.keys():
     # cross_val_score function with shuffle=True to figure out optimal k value
     
     for i in range(1000):
-        clf.fit(X, Y)
+        clf.fit(x_train, y_test)
         pred = clf.predict(x_test)  # these are predictions
         acc += clf.score(x_test, y_test)
 
