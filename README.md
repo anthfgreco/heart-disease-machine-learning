@@ -33,7 +33,7 @@ reduction technique
   decision trees
 - ***TODO***: have two modes for each algorithm: **cross_val** for hyperparameter optimization and  
   **testing** once best parameters have been determined
-  * current code is halfway there for cross validation but needed additional support for optimization
+  * current code is halfway there for cross validation but needs some additional code for optimizing multiple parameters
   * something to consider: add utils functions for the common steps of optimization and testing
 - ***TODO***: evaluate each model's performance using precision, recall, accuracy, 
 F1, ROC AUC, and confusion matrix 
