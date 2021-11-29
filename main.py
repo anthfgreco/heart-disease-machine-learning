@@ -1,37 +1,40 @@
-import numpy as np
 from utils import *
 from algorithms import *
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 """
 UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-prediction
 
 12 attributes
 
-0   Age: age of the patient [years]
-1   Sex: sex of the patient 
-	[M: Male, 
-	F: Female]
-2   ChestPainType: chest pain type 
-	[TA: Typical Angina, 
-	ATA: Atypical Angina, 
-	NAP: Non-Anginal Pain, 
-	ASY: Asymptomatic]
-3   RestingBP: resting blood pressure [mm Hg]
-4   Cholesterol: serum cholesterol [mm/dl]
-5   FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]
-6   RestingECG: resting electrocardiogram results  
-	[Normal: Normal, 
-	ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), 
-	LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]
-7   MaxHR: maximum heart rate achieved [Numeric value between 60 and 202]
-8   ExerciseAngina: exercise-induced angina 
-	[Y: Yes, 
-	N: No]
-9   Oldpeak: oldpeak = ST [Numeric value measured in depression]
-10  ST_Slope: the slope of the peak exercise ST segment 
-	[Up: upsloping, 
-	Flat: flat, 
-	Down: downsloping]
+0  Age: age of the patient [years]
+1  Sex: sex of the patient 
+      [M: Male, 
+      F: Female]
+2  ChestPainType: chest pain type 
+      [TA: Typical Angina, 
+      ATA: Atypical Angina, 
+      NAP: Non-Anginal Pain, 
+      ASY: Asymptomatic]
+3  RestingBP: resting blood pressure [mm Hg]
+4  Cholesterol: serum cholesterol [mm/dl]
+5  FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]
+6  RestingECG: resting electrocardiogram results  
+      [Normal: Normal, 
+      ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), 
+      LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]
+7  MaxHR: maximum heart rate achieved [Numeric value between 60 and 202]
+8  ExerciseAngina: exercise-induced angina 
+      [Y: Yes, 
+      N: No]
+9  Oldpeak: oldpeak = ST [Numeric value measured in depression]
+10 ST_Slope: the slope of the peak exercise ST segment 
+      [Up: upsloping, 
+      Flat: flat, 
+      Down: downsloping]
 
 11  HeartDisease: output class [1: heart disease, 0: Normal]
 """
@@ -89,14 +92,14 @@ for i, c in enumerate(reg):
 """
 
 # Decision Tree Classifier
-
+"""
 max_depth = None
 precision, recall, fscore = DecisionTree(x, y, max_depth, fold, repeat)
 print(f"Decision Tree classifier") 
 print(f"Precision:\t{precision:.2f}%")
 print(f"Recall: \t{recall:.2f}%")
 print(f"F-score:\t{fscore:.2f}%")
-
+"""
 
 # Random Forest Classifier
 """
@@ -123,3 +126,17 @@ for i, metric in enumerate(ann_metrics):
 	print(f"Recall: \t{ann_metrics[i][1]:.2f}%")
 	print(f"F-score:\t{ann_metrics[i][2]:.2f}%")
 """
+
+def correlation_heat_map(x, y):
+   data = np.column_stack((x, y))
+   data = data[:,1:]    #remove intercept column
+   dataframe = pd.DataFrame(data, columns=["Age","Sex","ChestPainType","RestingBP","Cholesterol","FastingBS","RestingECG","MaxHR","ExerciseAngina","Oldpeak","ST_Slope","HeartDisease"])
+
+   plt.figure(figsize=(18, 15))
+   sns.set_context(context="paper", font_scale=1.7)
+   plt.title("Correlation Matrix")
+   sns.heatmap(dataframe.corr(), annot=True, cmap='Blues')
+   plt.savefig("correlation_heat_map.png")
+   plt.close()
+
+#correlation_heat_map(x, y)
