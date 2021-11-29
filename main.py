@@ -1,12 +1,6 @@
 import numpy as np
 from utils import *
-from logreg import *
-from naivebayes import *
-from knn import *
-from svm import *
-from decisiontree import *
-from randomforest import *
-from ann import *
+from algorithms import *
 
 """
 UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-prediction
@@ -43,68 +37,69 @@ UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-pre
 """
 
 #TODO: visualize dataset in 2D space using PCA and dimension reduction
-#TODO: combine all algorithms into a single file
 
 x, y = load_dataset("heart_processed.csv")
 
-# five-fold cross validation
+# K cross validation
 fold = 5
-repeat = 100
+repeat = 5
 
 # Logistic Regression Model
-# penalty = 'l2'
-#
-# logreg = Logistic_Regression(x, y, penalty=penalty, fold=fold, repeat=repeat)
-#
-# print("The accuracy of the Logistic Regression classifier was {}%.".format(round(logreg * 100, 2)))
-#
-# # Naive Bayes (Gaussian) Model
+"""
+penalty = 'l2'
+logreg = Logistic_Regression(x, y, penalty=penalty, fold=fold, repeat=repeat)
+print("The accuracy of the Logistic Regression classifier was {}%.".format(round(logreg * 100, 2)))
+"""
+
+# Naive Bayes (Gaussian) Model
+"""
 nb = NaiveBayes(x, y, fold, repeat)
-
 print("The accuracy of the Naive Bayes classifier was {}%.".format(round(nb * 100, 2)))
-#
-# # k-Nearest Neighbours Classifier
-# neighbours = [10, 13, 15]     # based off the sqrt(n) rule of thumb
-#
-# knn = KNN_Clasifier(x, y, neighbours, fold, repeat)
-#
-# for i, neighbour in enumerate(neighbours):
-#     print("The accuracy of the {}-Nearest Neighbours classifier was {}%.".format(neighbour, round(knn[i] * 100, 2)))
-#
-# # Support Vector Machine Classifier
-# reg = [1.0, 2.0, 3.0, 4.0, 5.0]
-# kernel = ['linear', 'rbf']
-# gamma = 'scale'
-#
-# svm = SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat)
-#
-# for i, c in enumerate(reg):
-#     print("The accuracy of the {} SVM classifier with c={} was {}%.".format(kernel, c, round(svm[i] * 100, 2)))
-#
-# # Decision Tree Classifier
-# max_depth = None
-#
-# dtree = DecisionTree(x, y, max_depth, fold, repeat)
-#
-# print("The accuracy of the Decision Tree classifier was {}%.".format(round(dtree * 100, 2)))
-#
-# # Random Forest Classifier
-# estimators = 100
-#
-# randforest = RandomForest(x, y, estimators, fold, repeat)
-#
-# print("The accuracy of the Random Forest classifier was {}%.".format(round(randforest * 100, 2)))
-#
-# # Artificial Neural Network
-# layers = (100,)  # must be tuple
-# activation = 'relu'
-# solver = 'adam'
-# alpha = 0.0001
-# scales = ['std', 'norm', 'none']
-#
-# ann = ANN(x, y, layers, activation, solver, alpha, fold, repeat, scales)
-#
-# for i, score in enumerate(ann):
-#     print("The accuracy of the Artificial Neural Network with {} scaling was {}%."
-#           .format(scales[i], round(score * 100, 2)))
+"""
 
+# k-Nearest Neighbours Classifier
+"""
+neighbours = [10, 13, 15]     # based off the sqrt(n) rule of thumb
+knn = KNN_Clasifier(x, y, neighbours, fold, repeat)
+for i, neighbour in enumerate(neighbours):
+        print("The accuracy of the {}-Nearest Neighbours classifier was {}%.".format(neighbour, round(knn[i] * 100, 2)))
+"""
+
+# Support Vector Machine Classifier
+"""
+reg = [1.0, 2.0, 3.0, 4.0, 5.0]
+kernel = 'rbf'                  #'linear', 'poly', 'rbf', 'sigmoid', 'precomputed', default='rbf'
+gamma = 'scale'
+svm = SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat)
+
+for i, c in enumerate(reg):
+    print("The accuracy of the {} SVM classifier with c={} was {}%.".format(kernel, c, round(svm[i] * 100, 2)))
+"""
+
+# Decision Tree Classifier
+"""
+max_depth = None
+dtree = DecisionTree(x, y, max_depth, fold, repeat)
+print("The accuracy of the Decision Tree classifier was {}%.".format(round(dtree * 100, 2)))
+"""
+
+# Random Forest Classifier
+"""
+estimators = 100
+randforest = RandomForest(x, y, estimators, fold, repeat)
+print("The accuracy of the Random Forest classifier was {}%.".format(round(randforest * 100, 2)))
+"""
+
+# Artificial Neural Network
+"""
+layers = (4,8,4)        #tuple
+activation = 'relu'
+solver = 'adam'
+alpha = 0.0001
+scales = ['std', 'norm', 'none']
+ann = ANN(x, y, layers, activation, solver, alpha, fold, repeat, scales)
+
+for i, score in enumerate(ann):
+    print("The accuracy of the Artificial Neural Network with {} scaling was {}%."
+          .format(scales[i], round(score * 100, 2)))
+"""
