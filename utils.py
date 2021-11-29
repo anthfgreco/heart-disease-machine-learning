@@ -64,4 +64,4 @@ def read_csv_file(filename, remove_header=True, convert_to_float=False):
 
 def save_to_file(nparray, filename):
     """Writes nparray to filename"""
-    np.savetxt(filename, nparray, '%.1f', delimiter=",")
+    np.savetxt(filename, nparray, '%.1f', delimiter=",\t")

@@ -82,7 +82,6 @@ gamma = 'scale'
 svm_metrics = SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat)
 
 for i, c in enumerate(reg):
-    #print("The accuracy of the {} SVM classifier with c={} was {}%.".format(kernel, c, round(svm[i] * 100, 2)))
 	print(f"{kernel} SVM classifier with c={c}")
 	print(f"Precision:\t{svm_metrics[i][0]:.2f}%")
 	print(f"Recall: \t{svm_metrics[i][1]:.2f}%")
@@ -90,14 +89,14 @@ for i, c in enumerate(reg):
 """
 
 # Decision Tree Classifier
-"""
+
 max_depth = None
 precision, recall, fscore = DecisionTree(x, y, max_depth, fold, repeat)
 print(f"Decision Tree classifier") 
 print(f"Precision:\t{precision:.2f}%")
 print(f"Recall: \t{recall:.2f}%")
 print(f"F-score:\t{fscore:.2f}%")
-"""
+
 
 # Random Forest Classifier
 """

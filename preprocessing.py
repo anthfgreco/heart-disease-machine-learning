@@ -67,4 +67,17 @@ for i in range(len(data)):
 # Change string values in data to floats
 data = np.array(data, dtype=np.float16)
 
+# Delete cholestrol column, doesn't seem to have a significant impact
+#data = np.delete(data, 4, 1)   
+
+# If cholesterol value is 0, set value to the mean of the cholesterol column
+# This doesn't seem to have a significant effect on the results of the algorithms
+"""
+data_means = data.mean(axis=0)
+for i in range(len(data)):
+   # Cholesterol column
+   if data[i][4] == 0:
+      data[i][4] = data_means[4]
+"""
+
 save_to_file(data, "heart_processed.csv")
