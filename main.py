@@ -9,29 +9,29 @@ UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-pre
 
 0   Age: age of the patient [years]
 1   Sex: sex of the patient 
-         [M: Male, 
-         F: Female]
+	[M: Male, 
+	F: Female]
 2   ChestPainType: chest pain type 
-        [TA: Typical Angina, 
-        ATA: Atypical Angina, 
-        NAP: Non-Anginal Pain, 
-        ASY: Asymptomatic]
+	[TA: Typical Angina, 
+	ATA: Atypical Angina, 
+	NAP: Non-Anginal Pain, 
+	ASY: Asymptomatic]
 3   RestingBP: resting blood pressure [mm Hg]
 4   Cholesterol: serum cholesterol [mm/dl]
 5   FastingBS: fasting blood sugar [1: if FastingBS > 120 mg/dl, 0: otherwise]
 6   RestingECG: resting electrocardiogram results  
-        [Normal: Normal, 
-        ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), 
-        LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]
+	[Normal: Normal, 
+	ST: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV), 
+	LVH: showing probable or definite left ventricular hypertrophy by Estes' criteria]
 7   MaxHR: maximum heart rate achieved [Numeric value between 60 and 202]
 8   ExerciseAngina: exercise-induced angina 
-         [Y: Yes, 
-         N: No]
+	[Y: Yes, 
+	N: No]
 9   Oldpeak: oldpeak = ST [Numeric value measured in depression]
 10  ST_Slope: the slope of the peak exercise ST segment 
-         [Up: upsloping, 
-         Flat: flat, 
-         Down: downsloping]
+	[Up: upsloping, 
+	Flat: flat, 
+	Down: downsloping]
 
 11  HeartDisease: output class [1: heart disease, 0: Normal]
 """
@@ -47,59 +47,80 @@ repeat = 5
 # Logistic Regression Model
 """
 penalty = 'l2'
-logreg = Logistic_Regression(x, y, penalty=penalty, fold=fold, repeat=repeat)
-print("The accuracy of the Logistic Regression classifier was {}%.".format(round(logreg * 100, 2)))
+precision, recall, fscore = Logistic_Regression(x, y, penalty=penalty, fold=fold, repeat=repeat)
+print(f"Logistic Regression classifier")
+print(f"Precision:\t{precision:.2f}%")
+print(f"Recall: \t{recall:.2f}%")
+print(f"F-score:\t{fscore:.2f}%")
 """
 
 # Naive Bayes (Gaussian) Model
 """
-nb = NaiveBayes(x, y, fold, repeat)
-print("The accuracy of the Naive Bayes classifier was {}%.".format(round(nb * 100, 2)))
+precision, recall, fscore = NaiveBayes(x, y, fold, repeat)
+print(f"Naive Bayes classifier") 
+print(f"Precision:\t{precision:.2f}%")
+print(f"Recall: \t{recall:.2f}%")
+print(f"F-score:\t{fscore:.2f}%")
 """
 
 # k-Nearest Neighbours Classifier
 """
 neighbours = [10, 13, 15]     # based off the sqrt(n) rule of thumb
-knn = KNN_Clasifier(x, y, neighbours, fold, repeat)
+knn_metrics = KNN_Clasifier(x, y, neighbours, fold, repeat)
 for i, neighbour in enumerate(neighbours):
-        print("The accuracy of the {}-Nearest Neighbours classifier was {}%.".format(neighbour, round(knn[i] * 100, 2)))
+	print(f"{neighbour}-Nearest Neighbours classifier")
+	print(f"Precision:\t{knn_metrics[i][0]:.2f}%")
+	print(f"Recall: \t{knn_metrics[i][1]:.2f}%")
+	print(f"F-score:\t{knn_metrics[i][2]:.2f}%")
 """
 
 # Support Vector Machine Classifier
 """
 reg = [1.0, 2.0, 3.0, 4.0, 5.0]
-kernel = 'rbf'                  #'linear', 'poly', 'rbf', 'sigmoid', 'precomputed', default='rbf'
+kernel = 'rbf'          #'linear', 'poly', 'rbf', 'sigmoid', 'precomputed', default='rbf'
 gamma = 'scale'
-svm = SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat)
+svm_metrics = SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat)
 
 for i, c in enumerate(reg):
-    print("The accuracy of the {} SVM classifier with c={} was {}%.".format(kernel, c, round(svm[i] * 100, 2)))
+    #print("The accuracy of the {} SVM classifier with c={} was {}%.".format(kernel, c, round(svm[i] * 100, 2)))
+	print(f"{kernel} SVM classifier with c={c}")
+	print(f"Precision:\t{svm_metrics[i][0]:.2f}%")
+	print(f"Recall: \t{svm_metrics[i][1]:.2f}%")
+	print(f"F-score:\t{svm_metrics[i][2]:.2f}%")
 """
 
 # Decision Tree Classifier
 """
 max_depth = None
-dtree = DecisionTree(x, y, max_depth, fold, repeat)
-print("The accuracy of the Decision Tree classifier was {}%.".format(round(dtree * 100, 2)))
+precision, recall, fscore = DecisionTree(x, y, max_depth, fold, repeat)
+print(f"Decision Tree classifier") 
+print(f"Precision:\t{precision:.2f}%")
+print(f"Recall: \t{recall:.2f}%")
+print(f"F-score:\t{fscore:.2f}%")
 """
 
 # Random Forest Classifier
 """
 estimators = 100
-randforest = RandomForest(x, y, estimators, fold, repeat)
-print("The accuracy of the Random Forest classifier was {}%.".format(round(randforest * 100, 2)))
+precision, recall, fscore = RandomForest(x, y, estimators, fold, repeat)
+print(f"Random Forest classifier") 
+print(f"Precision:\t{precision:.2f}%")
+print(f"Recall: \t{recall:.2f}%")
+print(f"F-score:\t{fscore:.2f}%")
 """
 
 # Artificial Neural Network
 """
-layers = (4,8,4)        #tuple
+layers = (4,8)        #tuple
 activation = 'relu'
 solver = 'adam'
-alpha = 0.0001
+alpha = 1e-4
 scales = ['std', 'norm', 'none']
-ann = ANN(x, y, layers, activation, solver, alpha, fold, repeat, scales)
+ann_metrics = ANN(x, y, layers, activation, solver, alpha, fold, repeat, scales)
 
-for i, score in enumerate(ann):
-    print("The accuracy of the Artificial Neural Network with {} scaling was {}%."
-          .format(scales[i], round(score * 100, 2)))
+for i, metric in enumerate(ann_metrics):
+	print(f"Artificial Neural Network with {scales[i]} scaling")
+	print(f"Precision:\t{ann_metrics[i][0]:.2f}%")
+	print(f"Recall: \t{ann_metrics[i][1]:.2f}%")
+	print(f"F-score:\t{ann_metrics[i][2]:.2f}%")
 """

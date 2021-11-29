@@ -8,30 +8,36 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import precision_recall_fscore_support
 import random
 import numpy as np
 
-def get_kfold_crossvalid_score(x, y, clf, fold, repeat):
+def kfold_crossvalid_evaluation(x, y, clf, fold, repeat):
    rskf = RepeatedKFold(n_splits=fold, n_repeats=repeat, random_state=random.randint(1, 1000000))
-   score = np.zeros((fold * repeat,))
+   metrics = np.zeros((fold * repeat, 3)) #precision, recall, f-score
    i = 0
 
    for train_index, test_index in rskf.split(x, y):
       x_train, x_test = x[train_index], x[test_index]
       y_train, y_test = y[train_index], y[test_index]
       clf.fit(x_train, y_train)
-      score[i] = clf.score(x_test, y_test)
+      y_test_pred = clf.predict(x_test)
+      metric = precision_recall_fscore_support(y_test, y_test_pred, average='binary')
+      metrics[i] = metric[:3]
       i += 1
 
-   return score.mean()
+   metrics_mean = metrics.mean(axis=0)    #take mean of each column
+   metrics_mean = metrics_mean * 100      #multiply 100 to get percent
+   return metrics_mean[0], metrics_mean[1], metrics_mean[2]    #return precision mean, recall mean, f-score mean
+   
 
 def Logistic_Regression(x, y, penalty, fold, repeat):
    clf = LogisticRegression(penalty=penalty, max_iter=10000)
-   return get_kfold_crossvalid_score(x, y, clf, fold, repeat)
+   return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
 
 def NaiveBayes(x, y, fold, repeat):
     clf = GaussianNB()
-    return get_kfold_crossvalid_score(x, y, clf, fold, repeat)
+    return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
 
 def KNN_Clasifier(x, y, neighbours, fold, repeat):
     """
@@ -45,14 +51,14 @@ def KNN_Clasifier(x, y, neighbours, fold, repeat):
     """
 
     x_norm = MinMaxScaler().fit_transform(x)
-    scores = []
+    metric_list = []
 
     for neighbour in neighbours:
         clf = KNeighborsClassifier(n_neighbors=neighbour)
-        mean_score = get_kfold_crossvalid_score(x_norm, y, clf, fold, repeat)
-        scores.append(mean_score)
+        metric = kfold_crossvalid_evaluation(x_norm, y, clf, fold, repeat)
+        metric_list.append(metric)
 
-    return np.array(scores)
+    return metric_list
 
 def SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat):
     x_norm = StandardScaler().fit_transform(x)
@@ -60,18 +66,18 @@ def SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat):
 
     for c in reg:
         clf = SVC(C=c, kernel=kernel, gamma=gamma)
-        mean_score = get_kfold_crossvalid_score(x_norm, y, clf, fold, repeat)
+        mean_score = kfold_crossvalid_evaluation(x_norm, y, clf, fold, repeat)
         scores.append(mean_score)
 
     return np.array(scores)
 
 def DecisionTree(x, y, max_depth, fold, repeat):
     clf = DecisionTreeClassifier(max_depth=max_depth)
-    return get_kfold_crossvalid_score(x, y, clf, fold, repeat)
+    return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
 
 def RandomForest(x, y, estimators, fold, repeat):
     clf = RandomForestClassifier(n_estimators=estimators)
-    return get_kfold_crossvalid_score(x, y, clf, fold, repeat)
+    return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
 
 def ANN(x, y, layer, activation, solver, alpha, fold, repeat, scales):
     scores = []
@@ -85,7 +91,7 @@ def ANN(x, y, layer, activation, solver, alpha, fold, repeat, scales):
             x_norm = x
 
         clf = MLPClassifier(hidden_layer_sizes=layer, activation=activation, solver=solver, alpha=alpha, max_iter=10000)
-        mean_score = get_kfold_crossvalid_score(x_norm, y, clf, fold, repeat)
+        mean_score = kfold_crossvalid_evaluation(x_norm, y, clf, fold, repeat)
 
         scores.append(mean_score)
 
