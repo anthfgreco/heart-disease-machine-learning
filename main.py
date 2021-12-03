@@ -43,100 +43,100 @@ UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-pre
 
 x, y = load_dataset("heart_processed.csv")
 
-# K cross validation
+# K-Fold Cross Validation
 fold = 5
-repeat = 5
+repeat = 5  # repeat should be 10 for final plots, 5 for testing
+cv = RepeatedKFold(n_splits=fold, n_repeats=repeat)
 
-# Logistic Regression Model
+#bagging_clf = BaggingClassifier(clf)
+#adaboost_clf = AdaBoostClassifier(clf)
+
+# Logistic Regression Classifier
 """
+solver = 'lbfgs'
 penalty = 'l2'
-precision, recall, fscore = Logistic_Regression(x, y, penalty=penalty, fold=fold, repeat=repeat)
-print(f"Logistic Regression classifier")
-print(f"Precision:\t{precision:.2f}%")
-print(f"Recall: \t{recall:.2f}%")
-print(f"F-score:\t{fscore:.2f}%")
+max_iter = 10000
+logreg_clf = LogisticRegression(solver=solver, penalty=penalty, max_iter=max_iter)
+
+generate_clf_plot(logreg_clf, x, y, cv, "Logistic Regression Classifier")
+display_results("Logistic Regression Classifier", kfold_crossvalid_evaluation(x, y, logreg_clf, fold, repeat))
 """
 
-# Naive Bayes (Gaussian) Model
+# Naive Bayes (Gaussian) Classifier
 """
-precision, recall, fscore = NaiveBayes(x, y, fold, repeat)
-print(f"Naive Bayes classifier") 
-print(f"Precision:\t{precision:.2f}%")
-print(f"Recall: \t{recall:.2f}%")
-print(f"F-score:\t{fscore:.2f}%")
+naivebayes_clf = GaussianNB()
+
+generate_clf_plot(naivebayes_clf, x, y, cv, "Naive Bayes Classifier")
+display_results("Naive Bayes classifier", kfold_crossvalid_evaluation(x, y, naivebayes_clf, fold, repeat))
 """
 
-# k-Nearest Neighbours Classifier
+# K-Nearest Neighbours Classifier
 """
 neighbours = [10, 13, 15]     # based off the sqrt(n) rule of thumb
-knn_metrics = KNN_Clasifier(x, y, neighbours, fold, repeat)
-for i, neighbour in enumerate(neighbours):
-	print(f"{neighbour}-Nearest Neighbours classifier")
-	print(f"Precision:\t{knn_metrics[i][0]:.2f}%")
-	print(f"Recall: \t{knn_metrics[i][1]:.2f}%")
-	print(f"F-score:\t{knn_metrics[i][2]:.2f}%")
+x_normalized = MinMaxScaler().fit_transform(x)
+
+for neighbour in neighbours:
+    KNN_clf = KNeighborsClassifier(neighbour)
+    generate_clf_plot(KNN_clf, x_normalized, y, cv, f"KNN at K={neighbour} Classifier")
+    #display_results(f"KNN at K={neighbour} Classifier", kfold_crossvalid_evaluation(x_normalized, y, KNN_clf, fold, repeat))
 """
 
 # Support Vector Machine Classifier
 """
-reg = [1.0, 2.0, 3.0, 4.0, 5.0]
-kernel = 'rbf'          #'linear', 'poly', 'rbf', 'sigmoid', 'precomputed', default='rbf'
-gamma = 'scale'
-svm_metrics = SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat)
+reg_parameters = [1.0, 2.0, 3.0, 4.0, 5.0]
+x_normalized = StandardScaler().fit_transform(x)
+# kernel -> 'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'
+kernel = 'rbf' 
+# gamma -> 'scale', 'auto'
+gamma = 'scale' 
 
-for i, c in enumerate(reg):
-	print(f"{kernel} SVM classifier with c={c}")
-	print(f"Precision:\t{svm_metrics[i][0]:.2f}%")
-	print(f"Recall: \t{svm_metrics[i][1]:.2f}%")
-	print(f"F-score:\t{svm_metrics[i][2]:.2f}%")
+for c in reg_parameters:
+    SVM_clf = SVC(C=c, kernel=kernel, gamma=gamma)
+    #generate_clf_plot(SVM_clf, x_normalized, y, cv, f"SVM at c={c} Classifier")
+    display_results(f"SVM at c={c} Classifier", kfold_crossvalid_evaluation(x_normalized, y, SVM_clf, fold, repeat))
 """
+
 
 # Decision Tree Classifier
 """
 max_depth = None
-precision, recall, fscore = DecisionTree(x, y, max_depth, fold, repeat)
-print(f"Decision Tree classifier") 
-print(f"Precision:\t{precision:.2f}%")
-print(f"Recall: \t{recall:.2f}%")
-print(f"F-score:\t{fscore:.2f}%")
+# Can test 1-20 for min_samples_leaf and plot results
+min_samples_leaf = 15
+decisiontree_clf = DecisionTreeClassifier(max_depth=max_depth, min_samples_leaf=min_samples_leaf)
+
+generate_clf_plot(decisiontree_clf, x, y, cv, "Decision Tree Classifier")
+#display_results("Decision Tree Classifier", kfold_crossvalid_evaluation(x, y, decisiontree_clf, fold, repeat))
 """
 
 # Random Forest Classifier
+
+# Can test 1-200 for estimators and plot results
 """
-estimators = 100
-precision, recall, fscore = RandomForest(x, y, estimators, fold, repeat)
-print(f"Random Forest classifier") 
-print(f"Precision:\t{precision:.2f}%")
-print(f"Recall: \t{recall:.2f}%")
-print(f"F-score:\t{fscore:.2f}%")
+estimators = 200
+randomforest_clf = RandomForestClassifier(n_estimators=estimators)
+
+generate_clf_plot(randomforest_clf, x, y, cv, "Random Forest Classifier")
+display_results("Random Forest Classifier", kfold_crossvalid_evaluation(x, y, randomforest_clf, fold, repeat))
 """
 
 # Artificial Neural Network
 """
-layers = (4,8)        #tuple
+layers = (100,) 
 activation = 'relu'
 solver = 'adam'
-alpha = 1e-4
-scales = ['std', 'norm', 'none']
-ann_metrics = ANN(x, y, layers, activation, solver, alpha, fold, repeat, scales)
+alpha = 1e-5
+#scales = ['std', 'norm', 'none']
+scales = ['norm']
+max_iter = 10000
 
-for i, metric in enumerate(ann_metrics):
-	print(f"Artificial Neural Network with {scales[i]} scaling")
-	print(f"Precision:\t{ann_metrics[i][0]:.2f}%")
-	print(f"Recall: \t{ann_metrics[i][1]:.2f}%")
-	print(f"F-score:\t{ann_metrics[i][2]:.2f}%")
+for scale in scales:
+      if scale == 'norm':     x_norm = MinMaxScaler().fit_transform(x)
+      elif scale == 'std':    x_norm = StandardScaler().fit_transform(x)
+      else:                   x_norm = x
+      ANN_clf = MLPClassifier(hidden_layer_sizes=layers, activation=activation, solver=solver, alpha=alpha, max_iter=max_iter)
+
+      #generate_clf_plot(ANN_clf, x, y, cv, "ANN Classifier")
+      display_results(f"ANN Classifier with {scale} scale", kfold_crossvalid_evaluation(x_norm, y, ANN_clf, fold, repeat))
 """
-
-def correlation_heat_map(x, y):
-   data = np.column_stack((x, y))
-   data = data[:,1:]    #remove intercept column
-   dataframe = pd.DataFrame(data, columns=["Age","Sex","ChestPainType","RestingBP","Cholesterol","FastingBS","RestingECG","MaxHR","ExerciseAngina","Oldpeak","ST_Slope","HeartDisease"])
-
-   plt.figure(figsize=(18, 15))
-   sns.set_context(context="paper", font_scale=1.7)
-   plt.title("Correlation Matrix")
-   sns.heatmap(dataframe.corr(), annot=True, cmap='Blues')
-   plt.savefig("correlation_heat_map.png")
-   plt.close()
 
 #correlation_heat_map(x, y)

@@ -9,12 +9,17 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import precision_recall_fscore_support
+from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
+from sklearn.model_selection import learning_curve
+from sklearn.model_selection import ShuffleSplit
+import matplotlib.pyplot as plt
 import random
 import numpy as np
+import seaborn as sns
 
 def kfold_crossvalid_evaluation(x, y, clf, fold, repeat):
-   rskf = RepeatedKFold(n_splits=fold, n_repeats=repeat, random_state=random.randint(1, 1000000))
-   metrics = np.zeros((fold * repeat, 3)) #precision, recall, f-score
+   rskf = RepeatedKFold(n_splits=fold, n_repeats=repeat)
+   metric_array = np.zeros((fold * repeat, 3)) #precision, recall, f-score
    i = 0
 
    for train_index, test_index in rskf.split(x, y):
@@ -23,76 +28,64 @@ def kfold_crossvalid_evaluation(x, y, clf, fold, repeat):
       clf.fit(x_train, y_train)
       y_test_pred = clf.predict(x_test)
       metric = precision_recall_fscore_support(y_test, y_test_pred, average='binary')
-      metrics[i] = metric[:3]
+      metric_array[i] = metric[:3]
       i += 1
 
-   metrics_mean = metrics.mean(axis=0)    #take mean of each column
+   metrics_mean = metric_array.mean(axis=0)    #take mean of each column
    metrics_mean = metrics_mean * 100      #multiply 100 to get percent
    return metrics_mean[0], metrics_mean[1], metrics_mean[2]    #return precision mean, recall mean, f-score mean
    
+def generate_clf_plot(clf, x, y, cv, title):
+    train_size, train_scores, test_scores = learning_curve(estimator=clf, X=x, y=y, cv=cv)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std  = np.std(train_scores, axis=1)
+    test_scores_mean  = np.mean(test_scores, axis=1)
+    test_scores_std   = np.std(test_scores, axis=1)
 
-def Logistic_Regression(x, y, penalty, fold, repeat):
-   clf = LogisticRegression(penalty=penalty, max_iter=10000)
-   return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
+    figure, axes = plt.subplots(1, 1, figsize=(10, 10))
+    plt.title(title, fontsize=17)
 
-def NaiveBayes(x, y, fold, repeat):
-    clf = GaussianNB()
-    return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
+    axes.grid()
+    axes.fill_between(train_size, 
+                    train_scores_mean - train_scores_std,
+                    train_scores_mean + train_scores_std, 
+                    alpha=0.1,
+                    color="r")
+    axes.fill_between(train_size, 
+                    test_scores_mean - test_scores_std,
+                    test_scores_mean + test_scores_std, 
+                    alpha=0.1,
+                    color="g")
+    axes.plot(  train_size, 
+                train_scores_mean, 
+                'o-', 
+                color="r",
+                label="Training score")
+    axes.plot(  train_size, 
+                test_scores_mean, 
+                'o-', 
+                color="g",
+                label="Cross-validation score")
+    axes.legend(loc="best")
 
-def KNN_Clasifier(x, y, neighbours, fold, repeat):
-    """
-    Implements the k-Nearest Neighbours classifier
-    :param x: input
-    :param y: output
-    :param neighbours: number of neighbours
-    :param fold: number of folds to split dataset into
-    :param repeat: number of iterations
-    :return: average accuracy score for given params
-    """
+    plt.show()
+    plt.close()   
 
-    x_norm = MinMaxScaler().fit_transform(x)
-    metric_list = []
+def display_results(title, results):
+    precision, recall, fscore = results
+    print(f"{title}")
+    print(f"Precision:\t{precision:.2f}%")
+    print(f"Recall: \t{recall:.2f}%")
+    print(f"F-score:\t{fscore:.2f}%")
 
-    for neighbour in neighbours:
-        clf = KNeighborsClassifier(n_neighbors=neighbour)
-        metric = kfold_crossvalid_evaluation(x_norm, y, clf, fold, repeat)
-        metric_list.append(metric)
+def correlation_heat_map(x, y):
+   data = np.column_stack((x, y))
+   data = data[:,1:]    #remove intercept column
+   dataframe = pd.DataFrame(data, columns=["Age","Sex","ChestPainType","RestingBP","Cholesterol","FastingBS","RestingECG","MaxHR","ExerciseAngina","Oldpeak","ST_Slope","HeartDisease"])
 
-    return metric_list
-
-def SVM_Classifier(x, y, reg, kernel, gamma, fold, repeat):
-    x_norm = StandardScaler().fit_transform(x)
-    scores = []
-
-    for c in reg:
-        clf = SVC(C=c, kernel=kernel, gamma=gamma)
-        mean_score = kfold_crossvalid_evaluation(x_norm, y, clf, fold, repeat)
-        scores.append(mean_score)
-
-    return np.array(scores)
-
-def DecisionTree(x, y, max_depth, fold, repeat):
-    clf = DecisionTreeClassifier(max_depth=max_depth)
-    return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
-
-def RandomForest(x, y, estimators, fold, repeat):
-    clf = RandomForestClassifier(n_estimators=estimators)
-    return kfold_crossvalid_evaluation(x, y, clf, fold, repeat)
-
-def ANN(x, y, layer, activation, solver, alpha, fold, repeat, scales):
-    scores = []
-
-    for scale in scales:
-        if scale == 'norm':
-            x_norm = MinMaxScaler().fit_transform(x)
-        elif scale == 'std':
-            x_norm = StandardScaler().fit_transform(x)
-        else:
-            x_norm = x
-
-        clf = MLPClassifier(hidden_layer_sizes=layer, activation=activation, solver=solver, alpha=alpha, max_iter=10000)
-        mean_score = kfold_crossvalid_evaluation(x_norm, y, clf, fold, repeat)
-
-        scores.append(mean_score)
-
-    return np.array(scores)
+   plt.figure(figsize=(18, 15))
+   sns.set_context(context="paper", font_scale=1.7)
+   plt.title("Correlation Matrix")
+   sns.heatmap(dataframe.corr(), annot=True, cmap='Blues')
+   plt.savefig("correlation_heat_map.png")
+   plt.close()
