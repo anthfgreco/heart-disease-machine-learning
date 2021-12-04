@@ -45,7 +45,7 @@ x, y = load_dataset("heart_processed.csv")
 
 # K-Fold Cross Validation
 fold = 5
-repeat = 5  # repeat should be 10 for final plots, 5 for testing
+repeat = 4  # repeat should be 10 for final plots
 cv = RepeatedKFold(n_splits=fold, n_repeats=repeat)
 
 #bagging_clf = BaggingClassifier(clf)
@@ -58,16 +58,18 @@ penalty = 'l2'
 max_iter = 10000
 logreg_clf = LogisticRegression(solver=solver, penalty=penalty, max_iter=max_iter)
 
-generate_clf_plot(logreg_clf, x, y, cv, "Logistic Regression Classifier")
-display_results("Logistic Regression Classifier", kfold_crossvalid_evaluation(x, y, logreg_clf, fold, repeat))
+#generate_clf_plot(logreg_clf, x, y, cv, "Logistic Regression Classifier")
+#display_results("Logistic Regression Classifier", kfold_crossvalid_evaluation(x, y, logreg_clf, fold, repeat))
+generate_clf_bagging_adaboost_plots(logreg_clf, x, y, cv, alg_name="Logistic Regression")
 """
 
 # Naive Bayes (Gaussian) Classifier
 """
 naivebayes_clf = GaussianNB()
 
-generate_clf_plot(naivebayes_clf, x, y, cv, "Naive Bayes Classifier")
-display_results("Naive Bayes classifier", kfold_crossvalid_evaluation(x, y, naivebayes_clf, fold, repeat))
+#generate_clf_plot(naivebayes_clf, x, y, cv, "Naive Bayes Classifier")
+#display_results("Naive Bayes classifier", kfold_crossvalid_evaluation(x, y, naivebayes_clf, fold, repeat))
+generate_clf_bagging_adaboost_plots(naivebayes_clf, x, y, cv, alg_name="Naive Bayes")
 """
 
 # K-Nearest Neighbours Classifier
@@ -104,19 +106,21 @@ max_depth = None
 min_samples_leaf = 15
 decisiontree_clf = DecisionTreeClassifier(max_depth=max_depth, min_samples_leaf=min_samples_leaf)
 
-generate_clf_plot(decisiontree_clf, x, y, cv, "Decision Tree Classifier")
+#generate_clf_plot(decisiontree_clf, x, y, cv, "Decision Tree Classifier")
 #display_results("Decision Tree Classifier", kfold_crossvalid_evaluation(x, y, decisiontree_clf, fold, repeat))
+generate_clf_bagging_adaboost_plots(decisiontree_clf, x, y, cv, alg_name="Decision Tree")
 """
 
 # Random Forest Classifier
-
-# Can test 1-200 for estimators and plot results
 """
-estimators = 200
+# Can test 1-200 for estimators and plot results
+
+estimators = 100
 randomforest_clf = RandomForestClassifier(n_estimators=estimators)
 
-generate_clf_plot(randomforest_clf, x, y, cv, "Random Forest Classifier")
-display_results("Random Forest Classifier", kfold_crossvalid_evaluation(x, y, randomforest_clf, fold, repeat))
+#generate_clf_plot(randomforest_clf, x, y, cv, "Random Forest Classifier")
+#display_results("Random Forest Classifier", kfold_crossvalid_evaluation(x, y, randomforest_clf, fold, repeat))
+generate_clf_bagging_adaboost_plots(randomforest_clf, x, y, cv, alg_name="Random Forest")
 """
 
 # Artificial Neural Network

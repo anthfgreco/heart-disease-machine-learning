@@ -71,6 +71,109 @@ def generate_clf_plot(clf, x, y, cv, title):
     plt.show()
     plt.close()   
 
+def generate_clf_bagging_adaboost_plots(clf, x, y, cv, alg_name):
+   bagging_clf = BaggingClassifier(clf)
+   adaboost_clf = AdaBoostClassifier(clf)
+   title0 = f"{alg_name} Learning Curve"
+   title1 = "Bagging Learning Curve"    #f"{alg_name} Bagging Classifer"
+   title2 = "AdaBoost Learning Curve"   #f"{alg_name} AdaBoost Classifer"
+
+   figure, axes = plt.subplots(1, 3, figsize=(12, 5), sharey=True)
+
+   train_size, train_scores, test_scores = learning_curve(estimator=clf, X=x, y=y, cv=cv)
+   train_scores_mean = np.mean(train_scores, axis=1)
+   train_scores_std  = np.std(train_scores, axis=1)
+   test_scores_mean  = np.mean(test_scores, axis=1)
+   test_scores_std   = np.std(test_scores, axis=1)
+
+   axes[0].set_title(title0)
+   axes[0].grid()
+   axes[0].fill_between(train_size, 
+                     train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, 
+                     alpha=0.1,
+                     color="r")
+   axes[0].fill_between(train_size, 
+                     test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, 
+                     alpha=0.1,
+                     color="g")
+   axes[0].plot(  train_size, 
+               train_scores_mean, 
+               'o-', 
+               color="r",
+               label="Training score")
+   axes[0].plot(  train_size, 
+               test_scores_mean, 
+               'o-', 
+               color="g",
+               label="Cross-validation score")
+   axes[0].legend(loc='lower right')
+
+   train_size, train_scores, test_scores = learning_curve(estimator=bagging_clf, X=x, y=y, cv=cv)
+   train_scores_mean = np.mean(train_scores, axis=1)
+   train_scores_std  = np.std(train_scores, axis=1)
+   test_scores_mean  = np.mean(test_scores, axis=1)
+   test_scores_std   = np.std(test_scores, axis=1)
+
+   axes[1].set_title(title1)
+   axes[1].grid()
+   axes[1].fill_between(train_size, 
+                     train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, 
+                     alpha=0.1,
+                     color="r")
+   axes[1].fill_between(train_size, 
+                     test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, 
+                     alpha=0.1,
+                     color="g")
+   axes[1].plot(  train_size, 
+               train_scores_mean, 
+               'o-', 
+               color="r",
+               label="Training score")
+   axes[1].plot(  train_size, 
+               test_scores_mean, 
+               'o-', 
+               color="g",
+               label="Cross-validation score")
+   axes[1].legend(loc='lower right')
+
+   train_size, train_scores, test_scores = learning_curve(estimator=adaboost_clf, X=x, y=y, cv=cv)
+
+   train_scores_mean = np.mean(train_scores, axis=1)
+   train_scores_std  = np.std(train_scores, axis=1)
+   test_scores_mean  = np.mean(test_scores, axis=1)
+   test_scores_std   = np.std(test_scores, axis=1)
+
+   axes[2].set_title(title2)
+   axes[2].grid()
+   axes[2].fill_between(train_size, 
+                     train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, 
+                     alpha=0.1,
+                     color="r")
+   axes[2].fill_between(train_size, 
+                     test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, 
+                     alpha=0.1,
+                     color="g")
+   axes[2].plot(  train_size, 
+               train_scores_mean, 
+               'o-', 
+               color="r",
+               label="Training score")
+   axes[2].plot(  train_size, 
+               test_scores_mean, 
+               'o-', 
+               color="g",
+               label="Cross-validation score")
+   axes[2].legend(loc='lower right')
+
+   plt.show()
+   plt.close() 
+
 def display_results(title, results):
     precision, recall, fscore = results
     print(f"{title}")
