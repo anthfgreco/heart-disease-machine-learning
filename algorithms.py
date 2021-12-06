@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import precision_recall_fscore_support
-from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
+from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.model_selection import learning_curve
 from sklearn.model_selection import ShuffleSplit
 import matplotlib.pyplot as plt
@@ -35,7 +35,7 @@ def kfold_crossvalid_evaluation(x, y, clf, fold, repeat):
    metrics_mean = metrics_mean * 100      #multiply 100 to get percent
    return metrics_mean[0], metrics_mean[1], metrics_mean[2]    #return precision mean, recall mean, f-score mean
    
-def generate_clf_plot(clf, x, y, cv, title):
+def generate_clf_plot(clf, x, y, cv, title, filepath):
     train_size, train_scores, test_scores = learning_curve(estimator=clf, X=x, y=y, cv=cv)
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std  = np.std(train_scores, axis=1)
@@ -43,7 +43,7 @@ def generate_clf_plot(clf, x, y, cv, title):
     test_scores_std   = np.std(test_scores, axis=1)
 
     figure, axes = plt.subplots(1, 1, figsize=(10, 10))
-    plt.title(title, fontsize=17)
+    plt.title(title + " Learning Curve", fontsize=17)
 
     axes.grid()
     axes.fill_between(train_size, 
@@ -68,10 +68,12 @@ def generate_clf_plot(clf, x, y, cv, title):
                 label="Cross-validation score")
     axes.legend(loc="best")
 
-    plt.show()
+    
+    figure.savefig(filepath + "_learning_curve.png")
+    #plt.show()
     plt.close()   
 
-def generate_clf_bagging_adaboost_plots(clf, x, y, cv, alg_name):
+def generate_clf_bagging_adaboost_plots(clf, x, y, cv, alg_name, filepath):
    bagging_clf = BaggingClassifier(clf)
    adaboost_clf = AdaBoostClassifier(clf)
    title0 = f"{alg_name} Learning Curve"
@@ -155,23 +157,24 @@ def generate_clf_bagging_adaboost_plots(clf, x, y, cv, alg_name):
                      alpha=0.1,
                      color="r")
    axes[2].fill_between(train_size, 
-                     test_scores_mean - test_scores_std,
-                     test_scores_mean + test_scores_std, 
-                     alpha=0.1,
-                     color="g")
+                        test_scores_mean - test_scores_std,
+                        test_scores_mean + test_scores_std, 
+                        alpha=0.1,
+                        color="g")
    axes[2].plot(  train_size, 
-               train_scores_mean, 
-               'o-', 
-               color="r",
-               label="Training score")
+                  train_scores_mean, 
+                  'o-', 
+                  color="r",
+                  label="Training score")
    axes[2].plot(  train_size, 
-               test_scores_mean, 
-               'o-', 
-               color="g",
-               label="Cross-validation score")
+                  test_scores_mean, 
+                  'o-', 
+                  color="g",
+                  label="Cross-validation score")
    axes[2].legend(loc='lower right')
 
-   plt.show()
+   figure.savefig(filepath + "_triple_plot.png")
+   #plt.show()
    plt.close() 
 
 def display_results(title, results):
