@@ -16,11 +16,13 @@ The dataset used contains 918 total entries and was retrieved from [here](https:
 
 - converted non-numeric attributes into numeric fields
 - examined dataset for missing or incomplete information
-- ***TODO***: cholestrol column is 0 for a number of entries
-  * a good argument can be made to remove the cholestrol attribute since 
+- created two different preprocessing sets – one with cholesterol and one without
+  * a good argument can be made to use the non-cholesterol set since
   removing the 172 relevant entries would significantly reduce dataset size
 - ***TODO***: might be worthwhile to explore the dataset a little further (e.g. visualize 
 distribution for each feature)
+  * plot each feature's distribution w/ statistical measures
+  * pie chart showing stratification of target group
 
 ### ML Implementation
 
@@ -29,10 +31,8 @@ distribution for each feature)
 - ***TODO***: visualize the dataset as a 2D plot using PCA as the dimension
 reduction technique
   * this can be useful for determining which kernel to use for SVM
-  * it can also be useful for seeing if weighting is needed for SVM and 
-  decision trees
 - ***TODO***: have two modes for each algorithm: **cross_val** for hyperparameter optimization and  
-  **testing** once best parameters have been determined
+  **testing** once ideal parameters have been determined
   * current code is halfway there for cross validation but needs some additional code for optimizing multiple parameters
   * something to consider: add utils functions for the common steps of optimization and testing
 - ***TODO***: evaluate each model's performance using precision, recall, accuracy, 
@@ -66,7 +66,7 @@ hyperparameter optimization
 - ***TODO***: for each of the algorithms, tune each of the following parameters:
   * logistic regression: c, penalty type 
   * naive_bayes: n/a
-  * knn: n_neighbours, weights, algorithm
+  * knn: n_neighbours, weights, metric
   * svm: c, kernel, degree, gamma, coef0
   * decision tree: criterion, max_depth, min_samples_leaf, max_features
     * ccp_alpha if doing pruning
