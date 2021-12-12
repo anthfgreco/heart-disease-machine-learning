@@ -1,6 +1,10 @@
 import csv
 import numpy as np
 from utils import *
+from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 """
 UCI Heart Disease Data Set: https://www.kaggle.com/fedesoriano/heart-failure-prediction
@@ -64,6 +68,7 @@ for i in range(len(data)):
    if data[i][10] == "Flat":  data[i][10] = 1
    if data[i][10] == "Down":  data[i][10] = 2
 
+
 # Change string values in data to floats
 data = np.array(data, dtype=np.float16)
 
@@ -78,6 +83,13 @@ for i in range(len(data)):
    # Cholesterol column
    if data[i][4] == 0:
       data[i][4] = data_means[4]
+"""
+
+# Show missing data in cholesterol column
+"""
+ax = sns.heatmap(data, vmin=0, vmax=10)
+ax = sns.heatmap(data)
+plt.show()
 """
 
 save_to_file(data, "heart_processed.csv")

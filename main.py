@@ -45,7 +45,7 @@ x, y = load_dataset("heart_processed.csv")
 
 # K-Fold Cross Validation
 fold = 5
-repeat = 10 # repeat should be 10 for final plots
+repeat = 15 # repeat should be 10 for final plots
 cv = RepeatedKFold(n_splits=fold, n_repeats=repeat)
 
 #bagging_clf = BaggingClassifier(clf)
@@ -56,94 +56,95 @@ cv = RepeatedKFold(n_splits=fold, n_repeats=repeat)
 solver = 'lbfgs'
 penalty = 'l2'
 max_iter = 10000
-logreg_clf = LogisticRegression(solver=solver, penalty=penalty, max_iter=max_iter)
+C = 10
+logreg_clf = LogisticRegression(solver=solver, penalty=penalty, max_iter=max_iter, C=C)
 
-generate_clf_plot(logreg_clf, x, y, cv, "Logistic Regression", "graphs/logistic_regression")
+generate_clf_plot(logreg_clf, x, y, cv, "Logistic Regression", "optimal_graphs/logistic_regression")
 #display_results("Logistic Regression Classifier", kfold_crossvalid_evaluation(x, y, logreg_clf, fold, repeat))
-generate_clf_bagging_adaboost_plots(logreg_clf, x, y, cv, "Logistic Regression", "graphs/logistic_regression")
+generate_clf_bagging_adaboost_plots(logreg_clf, x, y, cv, "Logistic Regression", "optimal_graphs/logistic_regression")
 """
 
 # Naive Bayes (Gaussian) Classifier
 """
 naivebayes_clf = GaussianNB()
-generate_clf_plot(naivebayes_clf, x, y, cv, "Naive Bayes", "graphs/naive_bayes")
+generate_clf_plot(naivebayes_clf, x, y, cv, "Naive Bayes", "optimal_graphs/naive_bayes")
 #display_results("Naive Bayes classifier", kfold_crossvalid_evaluation(x, y, naivebayes_clf, fold, repeat))
-generate_clf_bagging_adaboost_plots(naivebayes_clf, x, y, cv, "Naive Bayes", "graphs/naive_bayes")
+generate_clf_bagging_adaboost_plots(naivebayes_clf, x, y, cv, "Naive Bayes", "optimal_graphs/naive_bayes")
 """
 
 # K-Nearest Neighbours Classifier
-
-neighbours = [10, 13, 15]     # based off the sqrt(n) rule of thumb
+"""
+#neighbours = [10, 13, 15]     # based off the sqrt(n) rule of thumb
+neighbours = [5]
 x_normalized = MinMaxScaler().fit_transform(x)
 
 for neighbour in neighbours:
-    KNN_clf = KNeighborsClassifier(neighbour)
-    generate_clf_plot(KNN_clf, x_normalized, y, cv, f"KNN at K={neighbour}", "graphs/KNN_k" + str(neighbour))
-    generate_clf_bagging_adaboost_plots(KNN_clf, x, y, cv, f"KNN at K={neighbour}", "graphs/KNN_k" + str(neighbour))
+    KNN_clf = KNeighborsClassifier(n_neighbors=neighbour, p=1, weights='uniform')
+    #generate_clf_plot(KNN_clf, x_normalized, y, cv, f"KNN at K={neighbour}", "optimal_graphs/KNN_k" + str(neighbour))
+    generate_clf_bagging_adaboost_plots(KNN_clf, x_normalized, y, cv, f"KNN at K={neighbour}", "optimal_graphs/KNN_k" + str(neighbour))
     #display_results(f"KNN at K={neighbour} Classifier", kfold_crossvalid_evaluation(x_normalized, y, KNN_clf, fold, repeat))
-    
-
+"""
 
 # Support Vector Machine Classifier
-
-reg_parameters = [1.0, 2.0, 3.0, 4.0, 5.0]
+"""
+#reg_parameters = [1.0, 2.0, 3.0, 4.0, 5.0]
+reg_parameters = [1]
 x_normalized = StandardScaler().fit_transform(x)
-# kernel -> 'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'
 kernel = 'rbf' 
-# gamma -> 'scale', 'auto'
-gamma = 'auto' 
+gamma = 'scale' 
 
 for c in reg_parameters:
-    SVM_clf = SVC(C=c, kernel=kernel, gamma=gamma)
-    generate_clf_plot(                    SVM_clf, x_normalized, y, cv, f"SVM at c={c}", "graphs/SVM_c" + str(c))
-    generate_clf_bagging_adaboost_plots(  SVM_clf, x_normalized, y, cv, f"SVM at c={c}", "graphs/SVM_c" + str(c))
+    SVM_clf = SVC(C=c, kernel=kernel, gamma=gamma, degree=3)
+    #generate_clf_plot(                    SVM_clf, x_normalized, y, cv, f"SVM at c={c}", "optimal_graphs/SVM_c" + str(c))
+    generate_clf_bagging_adaboost_plots(  SVM_clf, x_normalized, y, cv, f"SVM at c={c}", "optimal_graphs/SVM_c" + str(c))
     #display_results(f"SVM at c={c} Classifier", kfold_crossvalid_evaluation(x_normalized, y, SVM_clf, fold, repeat))
-
-
+"""
 
 # Decision Tree Classifier
-
-max_depth = None
+"""
 # Can test 1-20 for min_samples_leaf and plot results
-min_samples_leaf = 15
-decisiontree_clf = DecisionTreeClassifier(max_depth=max_depth, min_samples_leaf=min_samples_leaf)
+
+decisiontree_clf = DecisionTreeClassifier(max_depth=5, min_samples_leaf=1, ccp_alpha=0.01, criterion='gini', max_features=5)
 
 #display_results("Decision Tree Classifier", kfold_crossvalid_evaluation(x, y, decisiontree_clf, fold, repeat))
-generate_clf_plot(decisiontree_clf, x, y, cv, "Decision Tree", "graphs/decision_tree")
-generate_clf_bagging_adaboost_plots(decisiontree_clf, x, y, cv, "Decision Tree", "graphs/decision_tree")
-
+generate_clf_plot(decisiontree_clf, x, y, cv, "Decision Tree", "optimal_graphs/decision_tree")
+generate_clf_bagging_adaboost_plots(decisiontree_clf, x, y, cv, "Decision Tree", "optimal_graphs/decision_tree")
+"""
 
 # Random Forest Classifier
-
+"""
 # Can test 1-200 for estimators and plot results
 
-estimators = 100
-randomforest_clf = RandomForestClassifier(n_estimators=estimators)
+randomforest_clf = RandomForestClassifier(n_estimators=50, max_depth=9, criterion='gini')
 
 #display_results("Random Forest Classifier", kfold_crossvalid_evaluation(x, y, randomforest_clf, fold, repeat))
-generate_clf_plot(decisiontree_clf, x, y, cv, "Random Forest", "graphs/random_forest")
-generate_clf_bagging_adaboost_plots(decisiontree_clf, x, y, cv, "Random Forest", "graphs/random_forest")
+generate_clf_plot(decisiontree_clf, x, y, cv, "Random Forest", "optimal_graphs/random_forest")
+generate_clf_bagging_adaboost_plots(decisiontree_clf, x, y, cv, "Random Forest", "optimal_graphs/random_forest")
+"""
 
 # Artificial Neural Network
-
-layers = (100,) 
+"""
+layers = (10, 5, 2) 
 activation = 'relu'
 solver = 'adam'
-alpha = 1e-5
+alpha = 0.001
 #scales = ['std', 'norm', 'none']
-scales = ['norm']
-max_iter = 10000
+scales = ['std']
+max_iter = 15000
 
 for scale in scales:
       if scale == 'norm':     x_norm = MinMaxScaler().fit_transform(x)
       elif scale == 'std':    x_norm = StandardScaler().fit_transform(x)
       else:                   x_norm = x
-      ANN_clf = MLPClassifier(hidden_layer_sizes=layers, activation=activation, solver=solver, alpha=alpha, max_iter=max_iter)
+      ANN_clf = MLPClassifier(hidden_layer_sizes=layers, activation=activation, solver=solver, alpha=alpha, max_iter=max_iter, early_stopping=False)
 
       #generate_clf_plot(ANN_clf, x, y, cv, "ANN")
       #display_results(f"ANN Classifier with {scale} scale", kfold_crossvalid_evaluation(x_norm, y, ANN_clf, fold, repeat))
-      generate_clf_plot(                  ANN_clf, x, y, cv, "ANN (100,) relu adam", "graphs/ANN_relu_adam_100")
-      generate_clf_bagging_adaboost_plots(ANN_clf, x, y, cv, "ANN (100,) relu adam", "graphs/ANN_relu_adam_100")
-
+      #generate_clf_plot(                  ANN_clf, x_norm, y, cv, "ANN (10, 5, 2) relu adam", "optimal_graphs/ANN_relu_adam_10_5_2")
+      #generate_clf_bagging_adaboost_plots(ANN_clf, x_norm, y, cv, "ANN (10, 5, 2) relu adam", "optimal_graphs/ANN_relu_adam_10_5_2")
+      # triple plot seems to run forever, not sure why
+      generate_clf_bagging_plots(ANN_clf, x_norm, y, cv, "ANN (10, 5, 2) relu adam", "optimal_graphs/ANN_relu_adam_10_5_2")
+      print('done')
+"""
 
 #correlation_heat_map(x, y)
