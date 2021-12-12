@@ -36,6 +36,41 @@ def split_data(x, y, split_size, remove_header=False, convert_to_float=True):
 
     return x_train, x_test, y_train, y_test
 
+def generate_clf_plot(clf, x, y, cv, title, filepath):
+    train_size, train_scores, test_scores = learning_curve(estimator=clf, X=x, y=y, cv=cv)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std  = np.std(train_scores, axis=1)
+    test_scores_mean  = np.mean(test_scores, axis=1)
+    test_scores_std   = np.std(test_scores, axis=1)
+
+    figure, axes = plt.subplots(1, 1, figsize=(10, 10))
+    plt.title(title + " Learning Curve", fontsize=17)
+
+    axes.grid()
+    axes.fill_between(train_size, 
+                    train_scores_mean - train_scores_std,
+                    train_scores_mean + train_scores_std, 
+                    alpha=0.1,
+                    color="r")
+    axes.fill_between(train_size, 
+                    test_scores_mean - test_scores_std,
+                    test_scores_mean + test_scores_std, 
+                    alpha=0.1,
+                    color="g")
+    axes.plot(  train_size, 
+                train_scores_mean, 
+                'o-', 
+                color="r",
+                label="Training score")
+    axes.plot(  train_size, 
+                test_scores_mean, 
+                'o-', 
+                color="g",
+                label="Cross-validation score")
+    axes.legend(loc="best")
+
+    figure.savefig(filepath)
+    plt.close()
 
 def generate_clf_bagging_adaboost_plots(clf, x, y, cv, alg_name, filepath):
     bagging_clf = BaggingClassifier(clf)
