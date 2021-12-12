@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import random
+import seaborn as sns
 
 
 def load_dataset(file, header=None):
@@ -179,3 +180,18 @@ def generate_clf_bagging_adaboost_plots(clf, x, y, cv, alg_name, filepath):
 
     figure.savefig(filepath)
     plt.close()
+
+def correlation_heat_map(x, y):
+   data = np.column_stack((x, y))
+   #data = data[:,1:]    #remove intercept column
+   columns = "Age  Sex  CPT_ASY  CPT_ATA  CPT_NAP  CPT_TA  RestingBP  Cholesterol  FastingBS  rECG_LVH  rECG_Normal  rECG_ST  MaxHR  ExerciseAngina  Oldpeak  stSlope_Down  stSlope_Flat  stSlope_Up HeartDisease"
+   columns = columns.split()
+   #print(columns)
+   dataframe = pd.DataFrame(data, columns=columns)
+
+   plt.figure(figsize=(18, 15))
+   sns.set_context(context="paper", font_scale=1.7)
+   plt.title("Correlation Matrix")
+   sns.heatmap(dataframe.corr(), annot=False, cmap='Blues')
+   plt.savefig("correlation_heat_map.png")
+   plt.close()

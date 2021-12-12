@@ -140,6 +140,7 @@ def saveParams(params, names):
 
 def main(save_params=True):
     x, y = load_dataset("heart_encoded.csv")
+    #correlation_heat_map(x, y)
     x_train, x_test, y_train, y_test = split_data(x, y, split_size=0.3)
 
     t = time.time()
