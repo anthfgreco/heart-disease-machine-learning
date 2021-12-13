@@ -39,9 +39,9 @@ def ParameterTuning(x_train, x_test, y_train, y_test, clf, params, title, filena
     params = results.best_params_
 
     cfm = plot_confusion_matrix(results, x_test, y_test, cmap='magma')
-    cfm.figure_.savefig(str('graphs/cfm_' + filename))
+    cfm.figure_.savefig(str('plots/cfm_' + filename))
     generate_clf_bagging_adaboost_plots(
-        results, x_train, y_train, skf, title, str('graphs/' + filename))
+        results, x_train, y_train, skf, title, str('plots/' + filename))
 
     return results, params, scores
 
