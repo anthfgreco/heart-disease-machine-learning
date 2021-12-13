@@ -73,7 +73,7 @@ decision tree, random forest, and artificial neural network
   * knn: n_neighbours, weights, p
   * svm: c, kernel, degree, gamma
   * decision tree: max_depth, min_samples_leaf, ccp_alpha
-  * random forest: n_estimators max_depth, min_samples_leaf
+  * random forest: n_estimators, max_depth, min_samples_leaf
   * artificial neural network: hidden_layers, activation, alpha, early_stopping
 - used bagging and adaboost classifier to see if optimized models could be improved
 
